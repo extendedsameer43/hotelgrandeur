@@ -32,8 +32,8 @@ export default function Home() {
           />
         </div>
         
-        {/* Enhanced gradient overlays for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        {/* Enhanced gradient overlays for depth - lighter at top to not obscure globe */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
         
         {/* Subtle noise texture for premium feel */}

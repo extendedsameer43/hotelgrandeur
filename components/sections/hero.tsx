@@ -105,16 +105,16 @@ export function Hero() {
       </div>
 
       {/* Content Layer - Split Layout */}
-      <div className="relative z-20 flex min-h-screen items-center px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mx-auto max-w-7xl w-full pt-20 pb-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-30 flex min-h-screen items-center px-4 sm:px-6 lg:px-8 pt-24 pb-4">
+        <div className="mx-auto max-w-7xl w-full">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center">
             
             {/* Left Side - Minimized Text Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-8"
+              className="space-y-4"
             >
               {/* Floating badge */}
               <motion.div
@@ -131,7 +131,7 @@ export function Hero() {
               <div>
                 <h1
                   ref={titleRef}
-                  className="font-[family-name:var(--font-quintessential)] text-3xl font-normal leading-tight tracking-wide text-white sm:text-4xl md:text-5xl lg:text-6xl"
+                  className="font-[family-name:var(--font-quintessential)] text-4xl font-normal leading-tight tracking-wide text-white sm:text-5xl md:text-6xl lg:text-7xl"
                 >
                   <span className="hero-line inline-block">Elegance</span>
                   <br />
@@ -146,7 +146,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
-                className="text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed max-w-lg"
+                className="text-base sm:text-lg md:text-xl text-white/80 font-light leading-relaxed max-w-lg"
               >
                 Experience unparalleled luxury across our worldwide collection of premium hotels.
               </motion.p>
@@ -189,7 +189,7 @@ export function Hero() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.6 }}
-              className="relative h-[600px] lg:h-[700px] flex items-center justify-center"
+              className="relative flex items-start justify-center overflow-visible min-h-[500px]"
             >
               {/* Dotted Map Background */}
               <DottedMap 
@@ -200,12 +200,10 @@ export function Hero() {
                 opacity={0.15}
               />
               
-              <div ref={globeRef} className="relative w-full max-w-[650px] flex flex-col items-center pt-24 z-10">
+              <div ref={globeRef} className="relative w-full max-w-[580px] flex flex-col items-center pt-2 pb-2 z-[100]">
                 {/* Globe Container */}
-                <div className="relative w-full h-[480px] lg:h-[530px] overflow-visible">
-                  <div className="absolute inset-0 -top-12">
-                    <Globe className="w-full h-full" />
-                  </div>
+                <div className="relative w-full aspect-square z-[100] overflow-visible">
+                  <Globe className="w-full h-full" />
                 </div>
 
                 {/* Subtle Stats Below Globe - Much Closer */}
@@ -213,10 +211,10 @@ export function Hero() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 1.2 }}
-                  className="mt-4 grid grid-cols-3 gap-6 sm:gap-12 text-center w-full"
+                  className="mt-0 grid grid-cols-3 gap-2 sm:gap-4 text-center w-full z-[100]"
                 >
                   <div className="space-y-0.5">
-                    <div className="font-display text-3xl sm:text-4xl font-bold text-white">
+                    <div className="font-display text-2xl sm:text-3xl font-bold text-white">
                       <motion.span
                         ref={hotelsRef}
                         initial={{ opacity: 0 }}
@@ -226,11 +224,11 @@ export function Hero() {
                         0+
                       </motion.span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Hotels</div>
+                    <div className="text-[9px] sm:text-[10px] text-white/50 uppercase tracking-wider font-light">Hotels</div>
                   </div>
 
                   <div className="space-y-0.5">
-                    <div className="font-display text-3xl sm:text-4xl font-bold text-white">
+                    <div className="font-display text-2xl sm:text-3xl font-bold text-white">
                       <motion.span
                         ref={countriesRef}
                         initial={{ opacity: 0 }}
@@ -240,11 +238,11 @@ export function Hero() {
                         0+
                       </motion.span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Countries</div>
+                    <div className="text-[9px] sm:text-[10px] text-white/50 uppercase tracking-wider font-light">Countries</div>
                   </div>
 
                   <div className="space-y-0.5">
-                    <div className="font-display text-3xl sm:text-4xl font-bold text-white">
+                    <div className="font-display text-2xl sm:text-3xl font-bold text-white">
                       <motion.span
                         ref={guestsRef}
                         initial={{ opacity: 0 }}
@@ -254,7 +252,7 @@ export function Hero() {
                         0M+
                       </motion.span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Guests</div>
+                    <div className="text-[9px] sm:text-[10px] text-white/50 uppercase tracking-wider font-light">Guests</div>
                   </div>
                 </motion.div>
               </div>
@@ -267,7 +265,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden lg:block"
           >
             <motion.div
               animate={{ y: [0, 10, 0] }}
