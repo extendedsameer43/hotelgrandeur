@@ -162,7 +162,7 @@ export function Hero() {
                   <Button
                     asChild
                     size="lg"
-                    className="group relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary/80 px-8 py-6 text-base font-semibold shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105"
+                    className="group relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary/80 px-8 py-6 text-base font-semibold shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(212,175,55,0.6)] text-glow"
                   >
                     <Link href="#rooms" className="flex items-center gap-2">
                       Explore Rooms
@@ -176,7 +176,7 @@ export function Hero() {
                     asChild
                     variant="outline"
                     size="lg"
-                    className="rounded-full border-2 border-white/20 bg-white/5 px-8 py-6 text-base font-semibold text-white backdrop-blur-xl transition-all duration-300 hover:border-primary/60 hover:bg-primary/10"
+                    className="rounded-full border-2 border-white/20 bg-white/5 px-8 py-6 text-base font-semibold text-white backdrop-blur-xl transition-all duration-300 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
                   >
                     <Link href="#booking">Book Your Stay</Link>
                   </Button>
