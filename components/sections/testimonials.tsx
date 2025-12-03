@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -63,6 +69,7 @@ const testimonials = [
 export function Testimonials() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!api) return;
@@ -73,6 +80,52 @@ export function Testimonials() {
       setCurrent(api.selectedScrollSnap());
     });
   }, [api]);
+
+  useEffect(() => {
+    if (!cardsRef.current) return;
+
+    const cards = cardsRef.current.querySelectorAll(".testimonial-card");
+
+    // Staggered card entrance with slide effect
+    gsap.fromTo(
+      cards,
+      { opacity: 0, x: -100, rotateY: -15 },
+      {
+        opacity: 1,
+        x: 0,
+        rotateY: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: "top 70%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    // Star rating sequence animation
+    cards.forEach((card) => {
+      const stars = card.querySelectorAll(".star-icon");
+      gsap.fromTo(
+        stars,
+        { scale: 0, rotation: -180 },
+        {
+          scale: 1,
+          rotation: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+  }, []);
 
   return (
     <section id="testimonials" className="relative py-32 md:py-40 overflow-hidden">
@@ -98,10 +151,10 @@ export function Testimonials() {
               <Star className="mr-1 h-3 w-3 fill-primary" />
               Guest Experiences
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
               What Our Guests Say
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl font-light leading-relaxed">
+            <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed">
               Hear from travelers who've experienced the pinnacle of luxury and
               hospitality at our hotel.
             </p>
@@ -125,10 +178,10 @@ export function Testimonials() {
                 }),
               ]}
             >
-              <CarouselContent>
+              <CarouselContent ref={cardsRef}>
                 {testimonials.map((testimonial) => (
                   <CarouselItem key={testimonial.id}>
-                    <Card className="border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl">
+                    <Card className="testimonial-card border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl">
                       <CardContent className="p-8 md:p-12">
                         {/* Quote Icon */}
                         <motion.div
@@ -151,7 +204,7 @@ export function Testimonials() {
                               viewport={{ once: true }}
                               transition={{ duration: 0.3, delay: i * 0.1 }}
                             >
-                              <Star className="h-5 w-5 fill-primary text-primary" />
+                              <Star className="star-icon h-5 w-5 fill-primary text-primary" />
                             </motion.div>
                           ))}
                         </div>
@@ -162,7 +215,7 @@ export function Testimonials() {
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
                           transition={{ duration: 0.5, delay: 0.2 }}
-                          className="mb-8 text-lg leading-relaxed text-white md:text-xl"
+                          className="mb-8 text-sm leading-relaxed text-white sm:text-base md:text-lg"
                         >
                           "{testimonial.text}"
                         </motion.p>

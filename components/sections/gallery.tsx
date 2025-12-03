@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -75,6 +81,50 @@ const galleryImages = [
 export function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const galleryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!galleryRef.current) return;
+
+    // Staggered reveal of gallery images
+    const images = galleryRef.current.querySelectorAll(".gallery-item");
+    
+    gsap.fromTo(
+      images,
+      {
+        opacity: 0,
+        y: 60,
+        scale: 0.8,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: galleryRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    // Image hover scale effect
+    images.forEach((image) => {
+      const img = image.querySelector("img");
+      if (!img) return;
+
+      image.addEventListener("mouseenter", () => {
+        gsap.to(img, { scale: 1.1, duration: 0.5, ease: "power2.out" });
+      });
+
+      image.addEventListener("mouseleave", () => {
+        gsap.to(img, { scale: 1, duration: 0.5, ease: "power2.out" });
+      });
+    });
+  }, []);
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
@@ -119,10 +169,10 @@ export function Gallery() {
               <Camera className="mr-1 h-3 w-3" />
               Visual Journey
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
               Photo Gallery
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl font-light leading-relaxed">
+            <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed">
               Explore the breathtaking beauty and luxurious details of our
               property through stunning photography.
             </p>
@@ -130,11 +180,11 @@ export function Gallery() {
         </Reveal>
 
         {/* Masonry Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div ref={galleryRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {galleryImages.map((image, index) => (
             <Reveal key={image.id} delay={index * 0.1}>
               <motion.div
-                className={`group relative overflow-hidden rounded-xl cursor-pointer ${
+                className={`gallery-item group relative overflow-hidden rounded-xl cursor-pointer ${
                   index % 5 === 0 ? "md:row-span-2 h-[500px]" : "h-[300px]"
                 } ${index % 7 === 0 ? "lg:col-span-2" : "col-span-1"}`}
                 whileHover={{ scale: 1.02 }}

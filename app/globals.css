@@ -162,4 +162,14 @@
   .animate-spotlight {
     animation: spotlight 2s ease 0.5s 1 forwards;
   }
+
+  /* Hide scrollbar for mobile horizontal scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

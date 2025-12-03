@@ -11,10 +11,12 @@ import { Footer } from "@/components/footer";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { BackToTop } from "@/components/back-to-top";
 import { SectionSeparator } from "@/components/section-separator";
+import { PageLoader } from "@/components/page-loader";
 
 export default function Home() {
   return (
     <>
+      <PageLoader />
       {/* Fixed Background for entire page */}
       <div className="fixed inset-0 -z-50">
         <div className="absolute inset-0">

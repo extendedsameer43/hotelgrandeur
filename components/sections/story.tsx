@@ -1,12 +1,84 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/magicui/reveal";
 import { Heart, Users, Sparkles, Calendar } from "lucide-react";
 
 export function Story() {
+  const imageRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Image reveal with overlay wipe
+    if (imageRef.current) {
+      const image = imageRef.current.querySelector("img");
+      const overlay = imageRef.current.querySelector(".image-overlay");
+
+      gsap.fromTo(
+        overlay,
+        { scaleX: 1 },
+        {
+          scaleX: 0,
+          duration: 1.2,
+          ease: "power3.inOut",
+          scrollTrigger: {
+            trigger: imageRef.current,
+            start: "top 70%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      if (image) {
+        gsap.fromTo(
+          image,
+          { scale: 1.3 },
+          {
+            scale: 1,
+            duration: 1.2,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: imageRef.current,
+              start: "top 70%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+    }
+
+    // Timeline dots sequential reveal
+    if (timelineRef.current) {
+      const dots = timelineRef.current.querySelectorAll(".timeline-dot");
+
+      gsap.fromTo(
+        dots,
+        { scale: 0, backgroundColor: "rgba(255, 255, 255, 0.1)" },
+        {
+          scale: 1,
+          backgroundColor: "oklch(0.62 0.22 280)",
+          duration: 0.5,
+          stagger: 0.3,
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: timelineRef.current,
+            start: "top 75%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
     <section id="story" className="relative py-32 md:py-40 overflow-hidden">
       {/* Background decoration */}
@@ -27,7 +99,7 @@ export function Story() {
               className="relative"
             >
               {/* Main Image Container */}
-              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+              <div ref={imageRef} className="relative aspect-[4/5] overflow-hidden rounded-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070"
                   alt="Hotel Heritage"
@@ -38,6 +110,8 @@ export function Story() {
                 />
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                {/* Reveal Overlay */}
+                <div className="image-overlay absolute inset-0 bg-black origin-right z-10" />
               </div>
 
               {/* Decorative Frame */}
@@ -95,7 +169,7 @@ export function Story() {
               </h2>
 
               {/* Story Content */}
-              <div className="space-y-4 text-lg text-white leading-relaxed">
+              <div className="space-y-4 text-sm sm:text-base md:text-lg text-white leading-relaxed">
                 <p>
                   Founded in 1998 by visionary entrepreneurs Maria and Jonathan
                   Sterling, our hotel began as a dream to redefine luxury
@@ -124,6 +198,7 @@ export function Story() {
 
               {/* Key Values */}
               <motion.div
+                ref={timelineRef}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -160,7 +235,7 @@ export function Story() {
                     transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
                     className="flex items-start gap-3 rounded-lg border border-white/10 bg-gradient-to-br from-black/40 to-black/30 p-4 backdrop-blur-xl transition-all duration-300 hover:border-primary/30 hover:from-black/50 hover:to-black/40"
                   >
-                    <div className="rounded-lg bg-primary/10 p-2">
+                    <div className="timeline-dot rounded-lg bg-primary/10 p-2">
                       <value.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>

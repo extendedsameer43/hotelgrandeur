@@ -1,8 +1,11 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/magicui/spotlight";
 import { GridPattern } from "@/components/magicui/grid-pattern";
@@ -11,8 +14,82 @@ import { DottedMap } from "@/components/magicui/dotted-map";
 import { BackgroundBeams } from "@/components/aceternity/background-beams";
 import { TextReveal } from "@/components/aceternity/text-reveal";
 import { ArrowRight, Sparkles, MapPin, Building2, Users, Award } from "lucide-react";
+import { useMagneticButton } from "@/hooks/use-gsap-animations";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function Hero() {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const button1Ref = useRef<HTMLDivElement>(null);
+  const button2Ref = useRef<HTMLDivElement>(null);
+  const globeRef = useRef<HTMLDivElement>(null);
+  const hotelsRef = useRef<HTMLSpanElement>(null);
+  const countriesRef = useRef<HTMLSpanElement>(null);
+  const guestsRef = useRef<HTMLSpanElement>(null);
+
+  // Magnetic button effects
+  useMagneticButton(button1Ref, 0.2);
+  useMagneticButton(button2Ref, 0.2);
+
+  useEffect(() => {
+    // Title split text animation
+    if (titleRef.current) {
+      const lines = titleRef.current.querySelectorAll(".hero-line");
+      
+      gsap.fromTo(
+        lines,
+        { opacity: 0, y: 50, rotateX: -90 },
+        {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: "power4.out",
+          delay: 0.5,
+        }
+      );
+    }
+
+    // Globe parallax effect
+    if (globeRef.current) {
+      gsap.to(globeRef.current, {
+        y: -30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: globeRef.current,
+          start: "top center",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
+    }
+
+    // Counter animations
+    const animateCounter = (ref: React.RefObject<HTMLSpanElement | null>, endValue: number, suffix: string = "", delay: number = 0) => {
+      if (!ref.current) return;
+
+      const obj = { value: 0 };
+      gsap.to(obj, {
+        value: endValue,
+        duration: 2,
+        delay: delay,
+        ease: "power2.out",
+        onUpdate: () => {
+          if (ref.current) {
+            ref.current.textContent = Math.round(obj.value) + suffix;
+          }
+        },
+      });
+    };
+
+    animateCounter(hotelsRef, 120, "+", 1.5);
+    animateCounter(countriesRef, 50, "+", 1.7);
+    animateCounter(guestsRef, 10, "M+", 1.9);
+  }, []);
+  
   return (
     <section id="home" className="relative min-h-screen w-full overflow-visible">
       {/* Decorative overlay effects only */}
@@ -52,18 +129,16 @@ export function Hero() {
 
               {/* Main Headline */}
               <div>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                  className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-2xl leading-[1.1]"
+                <h1
+                  ref={titleRef}
+                  className="font-[family-name:var(--font-quintessential)] text-3xl font-normal leading-tight tracking-wide text-white sm:text-4xl md:text-5xl lg:text-6xl"
                 >
-                  Elegance
+                  <span className="hero-line inline-block">Elegance</span>
                   <br />
-                  Meets
+                  <span className="hero-line inline-block">Meets</span>
                   <br />
-                  Excellence
-                </motion.h1>
+                  <span className="hero-line inline-block">Excellence</span>
+                </h1>
               </div>
 
               {/* Subheadline */}
@@ -71,7 +146,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
-                className="text-lg text-white/80 font-light leading-relaxed max-w-lg"
+                className="text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed max-w-lg"
               >
                 Experience unparalleled luxury across our worldwide collection of premium hotels.
               </motion.p>
@@ -83,25 +158,29 @@ export function Hero() {
                 transition={{ duration: 0.8, delay: 1 }}
                 className="flex flex-col sm:flex-row items-start gap-4"
               >
-                <Button
-                  asChild
-                  size="lg"
-                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary/80 px-8 py-6 text-base font-semibold shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105"
-                >
-                  <Link href="#rooms" className="flex items-center gap-2">
-                    Explore Rooms
-                    <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                </Button>
+                <div ref={button1Ref}>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="group relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary/80 px-8 py-6 text-base font-semibold shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105"
+                  >
+                    <Link href="#rooms" className="flex items-center gap-2">
+                      Explore Rooms
+                      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                </div>
 
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="rounded-full border-2 border-white/20 bg-white/5 px-8 py-6 text-base font-semibold text-white backdrop-blur-xl transition-all duration-300 hover:border-primary/60 hover:bg-primary/10"
-                >
-                  <Link href="#booking">Book Your Stay</Link>
-                </Button>
+                <div ref={button2Ref}>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="rounded-full border-2 border-white/20 bg-white/5 px-8 py-6 text-base font-semibold text-white backdrop-blur-xl transition-all duration-300 hover:border-primary/60 hover:bg-primary/10"
+                  >
+                    <Link href="#booking">Book Your Stay</Link>
+                  </Button>
+                </div>
               </motion.div>
             </motion.div>
 
@@ -121,7 +200,7 @@ export function Hero() {
                 opacity={0.15}
               />
               
-              <div className="relative w-full max-w-[650px] flex flex-col items-center pt-24 z-10">
+              <div ref={globeRef} className="relative w-full max-w-[650px] flex flex-col items-center pt-24 z-10">
                 {/* Globe Container */}
                 <div className="relative w-full h-[480px] lg:h-[530px] overflow-visible">
                   <div className="absolute inset-0 -top-12">
@@ -139,11 +218,12 @@ export function Hero() {
                   <div className="space-y-0.5">
                     <div className="font-display text-3xl sm:text-4xl font-bold text-white">
                       <motion.span
+                        ref={hotelsRef}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 2, delay: 1.5 }}
                       >
-                        120+
+                        0+
                       </motion.span>
                     </div>
                     <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Hotels</div>
@@ -152,11 +232,12 @@ export function Hero() {
                   <div className="space-y-0.5">
                     <div className="font-display text-3xl sm:text-4xl font-bold text-white">
                       <motion.span
+                        ref={countriesRef}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 2, delay: 1.7 }}
                       >
-                        50+
+                        0+
                       </motion.span>
                     </div>
                     <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Countries</div>
@@ -165,11 +246,12 @@ export function Hero() {
                   <div className="space-y-0.5">
                     <div className="font-display text-3xl sm:text-4xl font-bold text-white">
                       <motion.span
+                        ref={guestsRef}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 2, delay: 1.9 }}
                       >
-                        10M+
+                        0M+
                       </motion.span>
                     </div>
                     <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider font-light">Guests</div>

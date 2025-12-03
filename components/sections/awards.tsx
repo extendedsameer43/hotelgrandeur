@@ -1,10 +1,18 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/magicui/reveal";
+import { ScrollNavButtons } from "@/components/ui/scroll-nav-buttons";
 import { Trophy, Award, Star, Medal, Crown, Shield } from "lucide-react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const awards = [
   {
@@ -64,6 +72,41 @@ const awards = [
 ];
 
 export function Awards() {
+  const counter1Ref = useRef<HTMLDivElement>(null);
+  const counter2Ref = useRef<HTMLDivElement>(null);
+  const counter3Ref = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Counter animations
+    const animateCounter = (ref: React.RefObject<HTMLDivElement | null>, endValue: number, suffix: string = "") => {
+      if (!ref.current) return;
+
+      const valueElement = ref.current.querySelector(".counter-value");
+      if (!valueElement) return;
+
+      const obj = { value: 0 };
+
+      gsap.to(obj, {
+        value: endValue,
+        duration: 2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+        onUpdate: () => {
+          valueElement.textContent = Math.round(obj.value) + suffix;
+        },
+      });
+    };
+
+    animateCounter(counter1Ref, 50, "+");
+    animateCounter(counter2Ref, 15, "+");
+    animateCounter(counter3Ref, 1, "");
+  }, []);
+
   return (
     <section id="awards" className="relative py-32 md:py-40 overflow-hidden">
       {/* Background decoration */}
@@ -88,23 +131,24 @@ export function Awards() {
               <Trophy className="mr-1 h-3 w-3" />
               Recognition & Excellence
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
               Awards & Achievements
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl font-light leading-relaxed">
+            <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed">
               Our commitment to excellence has been recognized by the world's most
               prestigious hospitality organizations.
             </p>
           </motion.div>
         </Reveal>
 
-        {/* Awards Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Awards - Mobile Horizontal Scroll / Desktop Grid */}
+        <div ref={cardsRef} className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 sm:grid sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible scrollbar-hide">
           {awards.map((award, index) => (
             <Reveal key={award.id} delay={index * 0.1}>
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
+                className="min-w-[85vw] sm:min-w-0 snap-center"
               >
                 <Card className="group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:scale-[1.02]">
                   {/* Gradient overlay on hover */}
@@ -161,6 +205,9 @@ export function Awards() {
           ))}
         </div>
 
+        {/* Mobile Navigation Buttons */}
+        <ScrollNavButtons containerRef={cardsRef} />
+
         {/* Bottom Stats */}
         <Reveal delay={0.6}>
           <motion.div
@@ -171,27 +218,27 @@ export function Awards() {
             className="mt-16 text-center"
           >
             <div className="inline-flex flex-col sm:flex-row items-center gap-8 rounded-2xl border border-white/10 bg-gradient-to-r from-black/40 via-black/30 to-black/40 px-8 py-6 backdrop-blur-xl">
-              <div className="text-center">
-                <div className="font-display text-4xl font-bold text-primary">
-                  50+
+              <div className="text-center" ref={counter1Ref}>
+                <div className="font-display text-4xl font-bold text-primary counter-value">
+                  0+
                 </div>
                 <div className="mt-1 text-sm text-white">
                   Industry Awards
                 </div>
               </div>
               <div className="hidden sm:block h-12 w-px bg-border/40" />
-              <div className="text-center">
-                <div className="font-display text-4xl font-bold text-primary">
-                  15+
+              <div className="text-center" ref={counter2Ref}>
+                <div className="font-display text-4xl font-bold text-primary counter-value">
+                  0+
                 </div>
                 <div className="mt-1 text-sm text-white">
                   Years of Excellence
                 </div>
               </div>
               <div className="hidden sm:block h-12 w-px bg-border/40" />
-              <div className="text-center">
-                <div className="font-display text-4xl font-bold text-primary">
-                  #1
+              <div className="text-center" ref={counter3Ref}>
+                <div className="font-display text-4xl font-bold text-primary counter-value">
+                  0
                 </div>
                 <div className="mt-1 text-sm text-white">
                   Ranked Globally

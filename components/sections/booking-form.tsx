@@ -1,7 +1,14 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
@@ -58,6 +65,7 @@ const formSchema = z.object({
 });
 
 export function BookingForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,6 +76,31 @@ export function BookingForm() {
       phone: "",
     },
   });
+
+  useEffect(() => {
+    if (!formRef.current) return;
+
+    const fields = formRef.current.querySelectorAll(".form-field");
+
+    // Sequential input reveals
+    gsap.fromTo(
+      fields,
+      { opacity: 0, x: -30, scale: 0.95 },
+      {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: formRef.current,
+          start: "top 75%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, []);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // UI-only: Show alert with form data
@@ -105,11 +138,11 @@ export function BookingForm() {
               <Hotel className="mr-1 h-3 w-3" />
               Book Your Stay
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight mb-4">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight mb-4">
               Reserve Your
               <span className="block text-primary">Perfect Escape</span>
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-white">
+            <p className="mx-auto max-w-2xl text-sm sm:text-base text-white">
               Complete the form below to check availability and reserve your luxury
               accommodation. Our team will confirm your booking within 24 hours.
             </p>
@@ -132,7 +165,7 @@ export function BookingForm() {
               <div className="absolute bottom-0 right-0 h-20 w-20 border-b-2 border-r-2 border-primary/20 rounded-br-3xl" />
 
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                   {/* Date Selection */}
                   <div className="grid gap-6 md:grid-cols-2">
                     {/* Check-in Date */}
@@ -140,7 +173,7 @@ export function BookingForm() {
                       control={form.control}
                       name="checkIn"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
+                        <FormItem className="form-field flex flex-col">
                           <FormLabel className="text-white font-semibold flex items-center gap-2">
                             <CalendarIcon className="h-4 w-4 text-primary" />
                             Check-in Date
@@ -186,7 +219,7 @@ export function BookingForm() {
                       control={form.control}
                       name="checkOut"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
+                        <FormItem className="form-field flex flex-col">
                           <FormLabel className="text-white font-semibold flex items-center gap-2">
                             <CalendarIcon className="h-4 w-4 text-primary" />
                             Check-out Date
@@ -235,7 +268,7 @@ export function BookingForm() {
                       control={form.control}
                       name="guests"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="form-field">
                           <FormLabel className="text-white font-semibold flex items-center gap-2">
                             <Users className="h-4 w-4 text-primary" />
                             Number of Guests
@@ -267,7 +300,7 @@ export function BookingForm() {
                       control={form.control}
                       name="roomType"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="form-field">
                           <FormLabel className="text-white font-semibold flex items-center gap-2">
                             <Hotel className="h-4 w-4 text-primary" />
                             Room Type
@@ -312,7 +345,7 @@ export function BookingForm() {
                       control={form.control}
                       name="name"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="form-field">
                           <FormLabel className="text-white font-semibold flex items-center gap-2">
                             <User className="h-4 w-4 text-primary" />
                             Full Name
@@ -336,7 +369,7 @@ export function BookingForm() {
                         control={form.control}
                         name="email"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="form-field">
                             <FormLabel className="text-white font-semibold flex items-center gap-2">
                               <Mail className="h-4 w-4 text-primary" />
                               Email Address
@@ -359,7 +392,7 @@ export function BookingForm() {
                         control={form.control}
                         name="phone"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="form-field">
                             <FormLabel className="text-white font-semibold flex items-center gap-2">
                               <Phone className="h-4 w-4 text-primary" />
                               Phone Number

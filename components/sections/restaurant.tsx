@@ -1,12 +1,20 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/magicui/reveal";
+import { ScrollNavButtons } from "@/components/ui/scroll-nav-buttons";
 import { UtensilsCrossed, Wine, Coffee, Cake, ChefHat, ArrowRight, Sparkles } from "lucide-react";
 
 const menuCategories = [
@@ -45,6 +53,50 @@ const menuCategories = [
 ];
 
 export function Restaurant() {
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!cardsRef.current) return;
+
+    const cards = cardsRef.current.querySelectorAll(".menu-card");
+
+    // Staggered card entrance
+    gsap.fromTo(
+      cards,
+      { opacity: 0, y: 80, rotateY: -20 },
+      {
+        opacity: 1,
+        y: 0,
+        rotateY: 0,
+        duration: 1,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: "top 75%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    // Image parallax on scroll
+    cards.forEach((card) => {
+      const img = card.querySelector("img");
+      if (!img) return;
+
+      gsap.to(img, {
+        y: -30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: card,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
+    });
+  }, []);
+
   return (
     <section id="restaurant" className="relative py-32 md:py-40 overflow-hidden">
       {/* Background decoration */}
@@ -69,25 +121,26 @@ export function Restaurant() {
               <Coffee className="mr-1 h-3 w-3" />
               Culinary Excellence
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
               Ground-Floor Restaurant
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl font-light leading-relaxed">
+            <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed">
               Experience world-class cuisine in an atmosphere of refined elegance.
               Our award-winning chefs create unforgettable culinary journeys.
             </p>
           </motion.div>
         </Reveal>
 
-        {/* Menu Categories Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+        {/* Menu Categories - Mobile Horizontal Scroll / Desktop Grid */}
+        <div ref={cardsRef} className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 sm:grid sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible mb-12 scrollbar-hide">
           {menuCategories.map((category, index) => (
             <Reveal key={category.id} delay={index * 0.15}>
               <motion.div
                 whileHover={{ y: -10 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
+                className="min-w-[85vw] sm:min-w-0 snap-center"
               >
-                <Card className="group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:scale-[1.02]">
+                <Card className="menu-card group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:scale-[1.02]">
                   {/* Category Image */}
                   <div className="relative h-56 w-full overflow-hidden">
                     <Image
@@ -140,6 +193,9 @@ export function Restaurant() {
             </Reveal>
           ))}
         </div>
+
+        {/* Mobile Navigation Buttons */}
+        <ScrollNavButtons containerRef={cardsRef} />
 
         {/* Featured Info Cards */}
         <Reveal delay={0.6}>

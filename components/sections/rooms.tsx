@@ -1,8 +1,11 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +18,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CardTilt } from "@/components/aceternity/card-tilt";
 import { Reveal } from "@/components/magicui/reveal";
+import { ScrollNavButtons } from "@/components/ui/scroll-nav-buttons";
 import { Wifi, AirVent, Tv, Coffee, Star, ArrowRight, Users } from "lucide-react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const rooms = [
   {
@@ -72,6 +80,49 @@ const rooms = [
 ];
 
 export function Rooms() {
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!cardsRef.current) return;
+
+    const cards = cardsRef.current.querySelectorAll(".room-card");
+
+    gsap.fromTo(
+      cards,
+      {
+        opacity: 0,
+        y: 60,
+        scale: 0.9,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    // Add hover animations
+    cards.forEach((card) => {
+      const img = card.querySelector("img");
+      
+      card.addEventListener("mouseenter", () => {
+        gsap.to(img, { scale: 1.1, duration: 0.6, ease: "power2.out" });
+      });
+
+      card.addEventListener("mouseleave", () => {
+        gsap.to(img, { scale: 1, duration: 0.6, ease: "power2.out" });
+      });
+    });
+  }, []);
+
   return (
     <section id="rooms" className="relative py-32 md:py-40 overflow-hidden">
       {/* Background decoration */}
@@ -96,22 +147,22 @@ export function Rooms() {
               <Star className="mr-1 h-3 w-3 fill-primary" />
               Premium Accommodations
             </Badge>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
               Discover Your Perfect Stay
             </h2>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80 md:text-xl font-light leading-relaxed">
+            <p className="mx-auto mt-6 max-w-2xl text-sm sm:text-base md:text-lg text-white/80 font-light leading-relaxed">
               From elegant deluxe rooms to opulent suites, each space is a
               masterpiece of comfort and sophistication.
             </p>
           </motion.div>
         </Reveal>
 
-        {/* Room Cards Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Room Cards - Mobile Horizontal Scroll / Desktop Grid */}
+        <div ref={cardsRef} className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:gap-8 md:grid-cols-2 lg:grid-cols-3 md:overflow-visible scrollbar-hide">
           {rooms.map((room, index) => (
             <Reveal key={room.id} delay={index * 0.2}>
-              <CardTilt containerClassName="h-full">
-                <Card className="group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:scale-[1.02]">
+              <CardTilt containerClassName="h-full min-w-[85vw] sm:min-w-[70vw] md:min-w-0 snap-center">
+                <Card className="room-card group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:scale-[1.02]">
                   {/* Featured Badge */}
                   {room.featured && (
                     <Badge className="absolute right-4 top-4 z-10 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg">
